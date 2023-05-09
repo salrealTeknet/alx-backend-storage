@@ -1,0 +1,2 @@
+//script to list all Dadabase in MongoDB
+show dbs
