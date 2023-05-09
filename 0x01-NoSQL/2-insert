@@ -1,0 +1,3 @@
+// Scrpit to Insert document school
+
+db.school.insert({name:"Holberton school"})
