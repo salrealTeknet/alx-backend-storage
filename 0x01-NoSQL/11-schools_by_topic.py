@@ -1,21 +1,16 @@
 #!/usr/bin/env python3
-import pymongo
+"""MongoDB Find"""
 
 
-def schools_by_topic(mongo_collection, topic: str):
-    """ Search the school based in school
+def schools_by_topic(mongo_collection, topic):
+    """
+    Search the school based in school
 
         Args:
             mongo_collection: Collection
             topic: Content
 
         Return:
-            List of school
+            List of schoo
     """
-    query: dict = {"topics": topic}
-    schools: list = []
-
-    for school in mongo_collection.find(query):
-        schools.append(school)
-
-    return schools
+    return [i for i in mongo_collection.find({"topics": topic})]
