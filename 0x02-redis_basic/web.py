@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-""" Implement an expiring web cache and tracker """
+"""Implementing an expiring web cache and tracker"""
 import redis
 import requests
 from typing import Callable
@@ -8,21 +8,27 @@ from functools import wraps
 r = redis.Redis()
 
 
-def count(method: Callable) -> Callable:
-    """ Count the number of times a page is accessed """
+def count_calls(method: Callable) -> Callable:
+    """ Decorator to know the number of calls """
+
     @wraps(method)
-    def wrapper(*args, **kwargs):
-        """ Wrapper """
-        r.incr(f"count:{args[0]}")
-        page = r.get(args[0])
-        if not page:
-            page = method(*args, **kwargs)
-            r.setex(args[0], 10, page)
-        return page
+    def wrapper(url):
+        """ Wrapper decorator """
+        r.incr(f"count:{url}")
+        cached_html = r.get(f"cached:{url}")
+        if cached_html:
+            return cached_html.decode('utf-8')
+
+        html = method(url)
+        r.setex(f"cached:{url}", 10, html)
+        return html
+
     return wrapper
 
 
-@count
+@count_calls
 def get_page(url: str) -> str:
-    """ Access a given url using requests """
-    return requests.get(url).text
+    """ Get page
+    """
+    req = requests.get(url)
+    return req.text
