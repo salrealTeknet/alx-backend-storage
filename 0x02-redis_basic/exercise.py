@@ -48,29 +48,21 @@ class Cache:
         self._redis.set(key, data)
         return key
 
-    def get(self, key: str,
-            fn: Optional[Callable] = None) -> Union[str, bytes, int, float]:
-        """ take a key string argument and an optional Callable argument named
-            fn. This callable will be used to convert the data back to the
-            desired format """
-        data = self._redis.get(key)
-        if fn:
-            return fn(data)
-        return data
-
-    def get_str(self, key: str) -> str:
-        """ automatically parametrize Cache.get to str """
-        data = self._redis.get(key)
-        return data.decode("utf-8")
-
-    def get_int(self, key: str) -> int:
-        """ automatically parametrize Cache.get to int """
-        data = self._redis.get(key)
-        try:
-            data = int(value.decode("utf-8"))
-        except Exception:
-            data = 0
-        return data
+    def get(self, key: str, fn: Optional[Callable] = None) -> Any:
+        """ Gets key's value from redis and converts
+            result byte  into correct data type
+        """
+        client = self._redis
+        value = client.get(key)
+        if not value:
+            return
+        if fn is int:
+            return self.get_int(value)
+        if fn is str:
+            return self.get_str(value)
+        if callable(fn):
+            return fn(value)
+        return value
 
     def get_str(self, data: bytes) -> str:
         """ Convert bytes to str """
