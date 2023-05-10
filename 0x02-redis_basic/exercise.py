@@ -36,7 +36,6 @@ def count_calls(method: Callable) -> Callable:
 class Cache:
     """ cache class defined """
     def __init__(self):
-        """ constructor - redis client instances are stored as private variable     name _redis"""
         self._redis = redis.Redis()
         self._redis.flushdb()
 
